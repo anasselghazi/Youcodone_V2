@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\ClientController;
+use App\Http\controllers\PaiementController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -33,7 +34,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/client', [ClientController::class, 'index'])->name('client.explore');
  Route::post('/restaurant/{restaurantId}/favorite', [ClientController::class, 'toggleFavorite'])->name('favorite.toggle')->middleware('auth');
+ 
 
+
+Route::get('/reservation/create/{id}', [ClientController::class, 'create'])->name('reservation.create');
+
+
+Route::post('/reservation/store/{id}', [ClientController::class, 'store'])->name('reservation.store');
+ 
+Route::get('payer',[PaiementController::class, 'initierLePaiement'])->name('paiement.paypal');
+Route::get('merci',[PaiementController::class, 'succesDuPaiement'])->name('paiement.succes');
+Route::get('annule' , [PaiementController::class, 'annulationDuPaiement'])->name('paiement.annule');
  });
 
 

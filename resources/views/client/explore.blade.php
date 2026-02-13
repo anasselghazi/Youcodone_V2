@@ -56,9 +56,9 @@
                             <span class="text-sm">Ville : {{ $restaurant->ville }}</span>
                         </div>
 
-                        <a href="#" class="mt-auto w-full text-center bg-black text-white py-2.5 rounded-lg font-bold hover:bg-gray-800 transition">
-                            Réserver une table
-                        </a>
+                           <a href="{{ route('reservation.create', $restaurant->id) }}" class="bg-black text-white px-4 py-2 rounded">
+                              Réserver une table
+                               </a>
                     </div>
                 </div>
             @empty

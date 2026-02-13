@@ -30,31 +30,40 @@ class ClientController extends Controller
          auth()->user()->favorites()->toggle($restaurantId);
          return back();
     }
-    public function storeReservation(Request $request, $id) {
-     $restaurant = Restaurant::findOrFail($id);
+     public function create($id)
+{
+    
+    $restaurant = Restaurant::findOrFail($id);
+    return view('client.create', compact('restaurant'));
+}
 
-     if ($restaurant->en_maintenance) {
-        return back()->with('error', 'Désolé, le restaurant est fermé pour maintenance');
+public function store(Request $request, $id)
+{
+    $restaurant = Restaurant::findOrFail($id);
+
+    
+    if ($restaurant->en_maintenance) {
+        return back()->with('erreur', 'Désolé, ce restaurant est en maintenance.');
     }
 
-     $already_booked = Reservation::where('restaurant_id', $id)
-                        ->where('date_reservation', $request->date_reservation)
-                        ->sum('nombre_personnes');
+    $deja_reserve = Reservation::where('restaurant_id', $id)
+        ->where('date_res', $request->date_res)
+        ->sum('nombre_personnes');
 
-    $remaining_seats = $restaurant->capacite - $already_booked;
+    $places_disponibles = $restaurant->capacite - $deja_reserve;
 
-     if ($request->nombre_personnes > $remaining_seats) {
-        return back()->with('error', "Il n’y a pas assez de places disponibles. Restant : $remaining_seats");
+    if ($request->nombre_personnes > $places_disponibles) {
+        return back()->with('erreur', "Places insuffisantes. Il reste uniquement $places_disponibles places.");
     }
 
-     Reservation::create([
+    
+    Reservation::create([
         'user_id' => auth()->id(),
         'restaurant_id' => $id,
-        'date_reservation' => $request->date_reservation,
-        'heure_reservation' => $request->heure_reservation,
-        'nombre_personnes' => $request->nombre_personnes
+        'date_res' => $request->date_res,
+        'nombre_personnes' => $request->nombre_personnes,
     ]);
 
-    return back()->with('success', 'Réservation effectuée avec succès !');
+    return redirect()->route('dashboard')->with('succes', 'Réservation effectuée !');
 }
 }
